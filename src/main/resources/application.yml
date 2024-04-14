@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/app
+    redis:
+      host: localhost
+      port: 6379
+      password: YXNkZmFzZGY=
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  graphql:
+    graphiql:
+      enabled: true
+  cache:
+    type: redis
+    cache-names: redis-cache
+    redis:
+      time-to-live: 30000
+  messages:
+    basename: i18n/messages
+  web:
+    locale: ru_RU
+
+minio:
+  url: http://localhost:9000
+  port: 9000
+  accessKey: user
+  secretKey: password
+  secure: false
+  bucket: minio-storage
+  image-size: 10485760
