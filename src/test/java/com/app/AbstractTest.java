@@ -1,7 +1,7 @@
-package com.wisestudent;
+package com.app;
 
-import com.wisestudent.config.DBConfig;
-import com.wisestudent.config.StorageConfig;
+import com.app.config.DBConfig;
+import com.app.config.StorageConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 

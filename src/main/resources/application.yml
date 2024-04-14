@@ -3,31 +3,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/app
-    redis:
-      host: localhost
-      port: 6379
-      password: YXNkZmFzZGY=
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-  graphql:
-    graphiql:
-      enabled: true
-  cache:
-    type: redis
-    cache-names: redis-cache
-    redis:
-      time-to-live: 30000
-  messages:
-    basename: i18n/messages
-  web:
-    locale: ru_RU
 
 minio:
   url: http://localhost:9000
@@ -37,3 +18,7 @@ minio:
   secure: false
   bucket: minio-storage
   image-size: 10485760
+
+token:
+  signing:
+    key: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855

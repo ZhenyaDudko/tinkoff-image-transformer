@@ -23,4 +23,6 @@ public class ImageMeta {
     private String imageId;
 
     private String mediaType;
+
+    private Long userId;
 }

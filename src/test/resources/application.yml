@@ -1,8 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/public
+#    username: postgres
+#    password: postgres
   jpa:
     properties:
       hibernate:
@@ -11,12 +11,12 @@ spring:
       ddl-auto: update
 
 minio:
-  url: http://localhost:9000
-  port: 9000
-  accessKey: user
-  secretKey: password
+#  url: http://localhost:9000
+#  port: 9000
+#  accessKey: minioadmin
+#  secretKey: minioadmin
   secure: false
-  bucket: minio-storage
+#  bucket: minio-storage
   image-size: 10485760
 
 token:

@@ -2,6 +2,7 @@ package com.app.advice;
 
 import com.app.dto.UiSuccessContainer;
 import com.app.exception.ImageIsTooBigException;
+import com.app.exception.ImageNotAccessibleException;
 import com.app.exception.ImageNotFoundException;
 import com.app.exception.NotSupportedTypeOfImageException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class APIExceptionHandler {
                 .body(new UiSuccessContainer(false, ex.getMessage()));
     }
 
-    @ExceptionHandler({ImageIsTooBigException.class, ImageNotFoundException.class})
+    @ExceptionHandler({ImageNotAccessibleException.class, ImageNotFoundException.class})
     public ResponseEntity<UiSuccessContainer> imageNotFount(Exception ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new UiSuccessContainer(false, ex.getMessage()));

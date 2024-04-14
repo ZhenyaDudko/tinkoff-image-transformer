@@ -1,8 +1,8 @@
 package com.app.exception;
 
-public class ImageNotAccessableException extends Exception {
+public class ImageNotAccessibleException extends Exception {
 
-    public ImageNotAccessableException() {
+    public ImageNotAccessibleException() {
         super("Image not found");
     }
 }

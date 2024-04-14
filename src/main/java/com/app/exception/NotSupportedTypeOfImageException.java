@@ -1,6 +1,8 @@
 package com.app.exception;
 
-public class ImageIsTooBigException {
+public class NotSupportedTypeOfImageException extends RuntimeException {
 
-    public ImageIsTooBigException() {}
+    public NotSupportedTypeOfImageException() {
+        super("Provided image has unsupported type");
+    }
 }

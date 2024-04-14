@@ -1,2 +1,6 @@
-package com.app.model.user;public class Role {
+package com.app.model.user;
+
+public enum Role {
+    ROLE_USER,
+    ROLE_ADMIN
 }

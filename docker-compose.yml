@@ -2,18 +2,15 @@ version: '2'
 
 services:
   app:
-    image: 'zhenyaaa50/tinkoff-task-2:1.0.0'
+    image: 'zhenyaaa50/tinkoff-image-transformer:1.0.0'
     container_name: app
     ports:
       - "8080:8080"
     depends_on:
       - db
-      - mongodb
-      - redis
+      - minio
     environment:
       - SPRING.DATASOURCE.URL=jdbc:postgresql://db/postgres
-      - SPRING.DATA.MONGODB.URI=mongodb://mongodb/app
-      - SPRING.DATA.REDIS.HOST=redis
       - MINIO.URL=http://minio
 
   db:
@@ -26,28 +23,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres:/var/lib/postgresql/data
-
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_DATABASE=app
-    volumes:
-      - ./environment/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - app-mongodb:/data/db
-      - app-mongo-config:/data/configdb
-
-  redis:
-    image: redis:7.2-rc-alpine
-    restart: always
-    container_name: redis
-    ports:
-      - "6379:6379"
-    command: redis-server --save 20 1 --logLevel warning --requirepass YXNkZmFzZGY=
-    volumes:
-      - app-redis:/data
 
   minio:
     image: minio/minio:latest
@@ -64,7 +39,4 @@ services:
 
 volumes:
   postgres:
-  app-mongodb:
-  app-mongo-config:
-  app-redis:
   storage-minio:

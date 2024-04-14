@@ -1,7 +1,9 @@
 package com.app.service;
 
 import com.app.config.MinioProperties;
+import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
@@ -25,6 +27,7 @@ public class MinioService {
         String imageId = UUID.randomUUID().toString();
 
         InputStream inputStream = new ByteArrayInputStream(file.getBytes());
+        checkBucket();
         client.putObject(
                 PutObjectArgs.builder()
                         .bucket(properties.getBucket())
@@ -38,6 +41,7 @@ public class MinioService {
     }
 
     public byte[] downloadImage(String imageId) throws Exception {
+        checkBucket();
         return IOUtils.toByteArray(client.getObject(
                 GetObjectArgs.builder()
                         .bucket(properties.getBucket())
@@ -46,10 +50,18 @@ public class MinioService {
     }
 
     public void deleteImage(String imageId) throws Exception {
+        checkBucket();
         client.removeObject(RemoveObjectArgs.builder()
                 .bucket(properties.getBucket())
                 .object(imageId)
                 .build()
         );
+    }
+
+    private void checkBucket() throws Exception {
+        if (client.bucketExists(BucketExistsArgs.builder().bucket(properties.getBucket()).build())) {
+            return;
+        }
+        client.makeBucket(MakeBucketArgs.builder().bucket(properties.getBucket()).build());
     }
 }

@@ -1,8 +1,8 @@
 package com.app.exception;
 
-public class ImageNotFoundException extends BaseNotFoundException {
+public final class ImageIsTooBigException extends RuntimeException {
 
-    public ImageNotFoundException(Object... args) {
-        super("exception.image.not_found", args);
+    public ImageIsTooBigException(long size, long maxSize) {
+        super("Provided image has size " + size + ", maximum accepted size is " + maxSize);
     }
 }
