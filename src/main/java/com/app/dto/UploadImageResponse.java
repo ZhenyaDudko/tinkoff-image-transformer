@@ -1,10 +1,15 @@
 package com.app.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 public class UploadImageResponse {
+    /**
+     * Image id in s3.
+     */
     private String imageId;
 }

@@ -14,18 +14,33 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+    /**
+     * User service.
+     */
     private final UserService userService;
+
+    /**
+     * Service for token generation and validation.
+     */
     private final JwtService jwtService;
+
+    /**
+     * Service for encoding password.
+     */
     private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Authentication manager.
+     */
     private final AuthenticationManager authenticationManager;
 
     /**
-     * Регистрация пользователя
+     * Регистрация пользователя.
      *
      * @param request данные пользователя
      * @return токен
      */
-    public JwtAuthenticationResponse signUp(SignUpRequest request) {
+    public JwtAuthenticationResponse signUp(final SignUpRequest request) {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -39,16 +54,17 @@ public class AuthenticationService {
     }
 
     /**
-     * Аутентификация пользователя
+     * Аутентификация пользователя.
      *
      * @param request данные пользователя
      * @return токен
      */
-    public JwtAuthenticationResponse signIn(SignInRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-        ));
+    public JwtAuthenticationResponse signIn(final SignInRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                ));
 
         var user = userService
                 .userDetailsService()
