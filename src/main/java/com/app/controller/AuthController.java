@@ -17,18 +17,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация")
-public class AuthController {
+public final class AuthController {
+
+    /**
+     * Authentication service.
+     */
     private final AuthenticationService authenticationService;
 
+    /**
+     * Sign up user with given credentials.
+     * @param request username and password.
+     * @return JWT token.
+     */
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
-    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+    public JwtAuthenticationResponse signUp(
+            @RequestBody @Valid final SignUpRequest request
+    ) {
         return authenticationService.signUp(request);
     }
 
+    /**
+     * Sign in user with given credentials.
+     * @param request username and password.
+     * @return JWT token.
+     */
     @Operation(summary = "Авторизация пользователя")
     @PostMapping("/sign-in")
-    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
+    public JwtAuthenticationResponse signIn(
+            @RequestBody @Valid final SignInRequest request
+    ) {
         return authenticationService.signIn(request);
     }
 }

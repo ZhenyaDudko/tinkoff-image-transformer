@@ -13,22 +13,49 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class APIExceptionHandler {
+public final class APIExceptionHandler {
 
-    @ExceptionHandler({ImageIsTooBigException.class, NotSupportedTypeOfImageException.class})
-    public ResponseEntity<UiSuccessContainer> imageNotValid(Exception ex) {
+    /**
+     * Handler for invalid image exceptions.
+     * @param ex caught exception.
+     * @return response with error message.
+     */
+    @ExceptionHandler({
+            ImageIsTooBigException.class,
+            NotSupportedTypeOfImageException.class
+    })
+    public ResponseEntity<UiSuccessContainer> imageNotValid(
+            final Exception ex
+    ) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new UiSuccessContainer(false, ex.getMessage()));
     }
 
-    @ExceptionHandler({ImageNotAccessibleException.class, ImageNotFoundException.class})
-    public ResponseEntity<UiSuccessContainer> imageNotFount(Exception ex) {
+    /**
+     * Handler for not found or not accessible image.
+     * @param ex caught exception.
+     * @return response with error message.
+     */
+    @ExceptionHandler({
+            ImageNotAccessibleException.class,
+            ImageNotFoundException.class
+    })
+    public ResponseEntity<UiSuccessContainer> imageNotFount(
+            final Exception ex
+    ) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new UiSuccessContainer(false, ex.getMessage()));
     }
 
+    /**
+     * Handler for unexpected exceptions.
+     * @param ex caught exception.
+     * @return response with error message.
+     */
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<UiSuccessContainer> unexpectedError(Exception ex) {
+    public ResponseEntity<UiSuccessContainer> unexpectedError(
+            final Exception ex
+    ) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new UiSuccessContainer(false, ex.getMessage()));
     }

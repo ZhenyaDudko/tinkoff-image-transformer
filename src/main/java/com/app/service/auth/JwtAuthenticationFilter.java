@@ -19,22 +19,47 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public final class JwtAuthenticationFilter extends OncePerRequestFilter {
+    /**
+     * Authentication header prefix.
+     */
     public static final String BEARER_PREFIX = "Bearer ";
+
+    /**
+     * Authentication header name.
+     */
     public static final String HEADER_NAME = "Authorization";
+
+    /**
+     * Service for token generation and validation.
+     */
     private final JwtService jwtService;
+
+    /**
+     * User service.
+     */
     private final UserService userService;
 
+    /**
+     * Filter incoming requests.
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+            final @NonNull HttpServletRequest request,
+            final @NonNull HttpServletResponse response,
+            final @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
         // Получаем токен из заголовка
         var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
+        if (StringUtils.isEmpty(authHeader)
+                || !StringUtils.startsWith(authHeader, BEARER_PREFIX)
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,22 +68,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var jwt = authHeader.substring(BEARER_PREFIX.length());
         var username = jwtService.extractUserName(jwt);
 
-        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null
+                && StringUtils.isNotEmpty(username)
+        ) {
             UserDetails userDetails = userService
                     .userDetailsService()
                     .loadUserByUsername(username);
 
             // Если токен валиден, то аутентифицируем пользователя
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                SecurityContext context =
+                        SecurityContextHolder.createEmptyContext();
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
                 );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
             }

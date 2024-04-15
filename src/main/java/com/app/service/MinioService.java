@@ -18,12 +18,25 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MinioService {
+public final class MinioService {
 
+    /**
+     * Minio client.
+     */
     private final MinioClient client;
+
+    /**
+     * Minio properties.
+     */
     private final MinioProperties properties;
 
-    public String uploadImage(MultipartFile file) throws Exception {
+    /**
+     * Upload image.
+     * @param file
+     * @return image id.
+     * @throws Exception
+     */
+    public String uploadImage(final MultipartFile file) throws Exception {
         String imageId = UUID.randomUUID().toString();
 
         InputStream inputStream = new ByteArrayInputStream(file.getBytes());
@@ -32,7 +45,11 @@ public class MinioService {
                 PutObjectArgs.builder()
                         .bucket(properties.getBucket())
                         .object(imageId)
-                        .stream(inputStream, file.getSize(), properties.getImageSize())
+                        .stream(
+                                inputStream,
+                                file.getSize(),
+                                properties.getImageSize()
+                        )
                         .contentType(file.getContentType())
                         .build()
         );
@@ -40,7 +57,13 @@ public class MinioService {
         return imageId;
     }
 
-    public byte[] downloadImage(String imageId) throws Exception {
+    /**
+     * Download image.
+     * @param imageId
+     * @return image in bytes.
+     * @throws Exception
+     */
+    public byte[] downloadImage(final String imageId) throws Exception {
         checkBucket();
         return IOUtils.toByteArray(client.getObject(
                 GetObjectArgs.builder()
@@ -49,7 +72,12 @@ public class MinioService {
                         .build()));
     }
 
-    public void deleteImage(String imageId) throws Exception {
+    /**
+     * Delete image.
+     * @param imageId
+     * @throws Exception
+     */
+    public void deleteImage(final String imageId) throws Exception {
         checkBucket();
         client.removeObject(RemoveObjectArgs.builder()
                 .bucket(properties.getBucket())
@@ -58,10 +86,22 @@ public class MinioService {
         );
     }
 
+    /**
+     * Check if bucket exists and create otherwise.
+     * @throws Exception
+     */
     private void checkBucket() throws Exception {
-        if (client.bucketExists(BucketExistsArgs.builder().bucket(properties.getBucket()).build())) {
+        if (client.bucketExists(BucketExistsArgs
+                .builder()
+                .bucket(properties.getBucket())
+                .build())
+        ) {
             return;
         }
-        client.makeBucket(MakeBucketArgs.builder().bucket(properties.getBucket()).build());
+        client.makeBucket(MakeBucketArgs
+                .builder()
+                .bucket(properties.getBucket())
+                .build()
+        );
     }
 }

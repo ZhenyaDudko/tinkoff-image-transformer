@@ -3,15 +3,20 @@ package com.app.dto.auth;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Ответ c токеном доступа")
 public class JwtAuthenticationResponse {
-    @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
+    /**
+     * Token.
+     */
+    @Schema(description = "Токен доступа", example = "eyJhbGciOiJIxMiJ9.eIm...")
     private String token;
 }

@@ -9,11 +9,23 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(MinioProperties.class)
 public class MinioConfig {
 
+    protected MinioConfig() {
+    }
+
+    /**
+     * @param properties
+     * @return MinioClient bean.
+     */
     @Bean
-    public MinioClient minioClient(MinioProperties properties) {
+    public static MinioClient minioClient(final MinioProperties properties) {
         return MinioClient.builder()
-                .credentials(properties.getAccessKey(), properties.getSecretKey())
-                .endpoint(properties.getUrl(), properties.getPort(), properties.isSecure())
+                .credentials(
+                        properties.getAccessKey(),
+                        properties.getSecretKey())
+                .endpoint(
+                        properties.getUrl(),
+                        properties.getPort(),
+                        properties.isSecure())
                 .build();
     }
 }
