@@ -2,7 +2,7 @@ version: '2'
 
 services:
   app:
-    image: 'zhenyaaa50/tinkoff-image-transformer:1.0.0'
+    image: 'zhenyaaa50/tinkoff-image-transformer:2.0.0'
     container_name: app
     ports:
       - "8080:8080"
