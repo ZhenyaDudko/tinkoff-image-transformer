@@ -1,6 +1,7 @@
 package com.app.advice;
 
 import com.app.dto.UiSuccessContainer;
+import com.app.exception.FilterRequestNotFoundException;
 import com.app.exception.ImageIsTooBigException;
 import com.app.exception.ImageNotAccessibleException;
 import com.app.exception.ImageNotFoundException;
@@ -38,7 +39,8 @@ public final class APIExceptionHandler {
      */
     @ExceptionHandler({
             ImageNotAccessibleException.class,
-            ImageNotFoundException.class
+            ImageNotFoundException.class,
+            FilterRequestNotFoundException.class,
     })
     public ResponseEntity<UiSuccessContainer> imageNotFount(
             final Exception ex
