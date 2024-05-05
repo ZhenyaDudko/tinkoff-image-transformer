@@ -7,9 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FilterQueryRepository extends JpaRepository<FilterQuery, Integer> {
+public interface FilterQueryRepository extends
+        JpaRepository<FilterQuery, Integer> {
     /**
      * Find filter query by image id.
+     *
      * @param requestId request id.
      * @return optional FilterQuery entity.
      */

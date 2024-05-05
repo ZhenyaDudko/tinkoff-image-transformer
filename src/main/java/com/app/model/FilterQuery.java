@@ -41,7 +41,18 @@ public class FilterQuery {
      */
     private String filteredImageId;
 
+    /**
+     * Status of image filtering.
+     */
     public enum Status {
-        WIP, DONE
+        /**
+         * Not yet filtered.
+         */
+        WIP,
+
+        /**
+         * Filtered.
+         */
+        DONE
     }
 }

@@ -14,7 +14,7 @@ public class GetModifiedImageByRequestIdResponse {
     private String imageId;
 
     /**
-     * Статус обработки файла
+     * Статус обработки файла.
      */
     private String status;
 }

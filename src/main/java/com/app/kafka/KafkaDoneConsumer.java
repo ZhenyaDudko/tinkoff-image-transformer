@@ -11,25 +11,40 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static com.app.kafka.KafkaInitializer.TOPIC_DONE;
+
 @Component
 @RequiredArgsConstructor
-public class KafkaConsumer {
+public class KafkaDoneConsumer {
 
+    /**
+     * Filter query repository.
+     */
     private final FilterQueryRepository filterQueryRepository;
 
+    /**
+     * Listener.
+     *
+     * @param record         received message.
+     * @param acknowledgment object for pushing offset.
+     */
     @KafkaListener(
-            topics = KafkaSender.TOPIC_DONE,
+            topics = TOPIC_DONE,
             groupId = "consumer-done",
             concurrency = "2",
             properties = {
                     ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG + "=false",
                     ConsumerConfig.ISOLATION_LEVEL_CONFIG + "=read_committed",
-                    ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG +
-                            "=org.apache.kafka.clients.consumer.RoundRobinAssignor"
+                    ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG
+                      + "=org.apache.kafka.clients.consumer.RoundRobinAssignor"
             }
     )
-    public void consume(ConsumerRecord<String, ImageDoneMessage> record, Acknowledgment acknowledgment) {
-        Optional<FilterQuery> filterQuery = filterQueryRepository.findByRequestId(record.value().getRequestId());
+    public void consume(
+            final ConsumerRecord<String, ImageDoneMessage> record,
+            final Acknowledgment acknowledgment
+    ) {
+        Optional<FilterQuery> filterQuery = filterQueryRepository
+                .findByRequestId(record.value().getRequestId());
         filterQuery.ifPresent(query -> filterQueryRepository.save(query
                 .setStatus(FilterQuery.Status.DONE)
                 .setFilteredImageId(record.value().getImageId())

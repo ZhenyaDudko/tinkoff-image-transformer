@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 public class ImageDoneMessage {
     /**
-     * ИД итогового изображения
+     * ИД итогового изображения.
      */
     private String imageId;
     /**

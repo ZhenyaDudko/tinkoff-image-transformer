@@ -6,7 +6,7 @@ import com.app.exception.ImageNotAccessibleException;
 import com.app.exception.ImageNotFoundException;
 import com.app.exception.NotSupportedTypeOfImageException;
 import com.app.kafka.ImageWipMessage;
-import com.app.kafka.KafkaSender;
+import com.app.kafka.KafkaWipSender;
 import com.app.model.FilterQuery;
 import com.app.model.ImageMeta;
 import com.app.model.user.User;
@@ -64,7 +64,7 @@ public final class ImageService {
     /**
      * Kafka sender service.
      */
-    private final KafkaSender kafkaSender;
+    private final KafkaWipSender kafkaSender;
 
     /**
      * Delete image.
@@ -140,7 +140,8 @@ public final class ImageService {
      * @param filters
      * @return an id of query in system.
      */
-    public String filterImage(String imageId, List<Filter> filters) throws Exception {
+    public String filterImage(final String imageId, final List<Filter> filters)
+            throws Exception {
         ImageMeta imageMeta = getAndCheckImage(imageId);
         String requestId = UUID.randomUUID().toString();
         filterQueryRepository.save(new FilterQuery()
@@ -148,14 +149,29 @@ public final class ImageService {
                 .setStatus(FilterQuery.Status.WIP)
                 .setRequestId(requestId)
         );
-        kafkaSender.sendMessage(new ImageWipMessage(imageId, requestId, filters.stream().map(Enum::toString).toList()));
+        kafkaSender.sendMessage(new ImageWipMessage(
+                imageId,
+                requestId,
+                filters.stream().map(Enum::toString).toList())
+        );
 
         return requestId;
     }
 
-    public Pair<String, FilterQuery.Status> getFilterImageStatus(String imageId, String requestId) throws Exception {
-        ImageMeta imageMeta = getAndCheckImage(imageId);
-        Optional<FilterQuery> optionalFilterQuery = filterQueryRepository.findByRequestId(requestId);
+    /**
+     * Get image filtering status.
+     * @param imageId image id.
+     * @param requestId request id.
+     * @return either original image id and 'wip' or final image id and 'done'
+     * @throws Exception
+     */
+    public Pair<String, FilterQuery.Status> getFilterImageStatus(
+            final String imageId,
+            final String requestId
+    ) throws Exception {
+        getAndCheckImage(imageId);
+        Optional<FilterQuery> optionalFilterQuery =
+                filterQueryRepository.findByRequestId(requestId);
         if (optionalFilterQuery.isEmpty()) {
             throw new FilterRequestNotFoundException();
         }
@@ -164,11 +180,22 @@ public final class ImageService {
         if (filterQuery.getStatus() == FilterQuery.Status.WIP) {
             return Pair.of(filterQuery.getImageId(), FilterQuery.Status.WIP);
         } else {
-            return Pair.of(filterQuery.getFilteredImageId(), FilterQuery.Status.DONE);
+            return Pair.of(
+                    filterQuery.getFilteredImageId(),
+                    FilterQuery.Status.DONE
+            );
         }
     }
 
-    private ImageMeta getAndCheckImage(String imageId) throws ImageNotFoundException, ImageNotAccessibleException {
+    /**
+     * Check that image exists and requesting user has access rights.
+     * @param imageId image id
+     * @return image meta
+     * @throws ImageNotFoundException
+     * @throws ImageNotAccessibleException
+     */
+    private ImageMeta getAndCheckImage(final String imageId)
+            throws ImageNotFoundException, ImageNotAccessibleException {
         Optional<ImageMeta> imageMeta =
                 imageMetaRepository.findImageMetaByImageId(imageId);
         if (imageMeta.isEmpty()) {
@@ -184,9 +211,5 @@ public final class ImageService {
     }
 
     public enum Filter {
-        REVERS_COLORS,
-        CROP,
-        REMOVE_BACKGROUND,
-        OTHER
     }
 }

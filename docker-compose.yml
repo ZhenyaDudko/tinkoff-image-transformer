@@ -1,20 +1,20 @@
 version: '2'
 
 services:
-#  app:
-#    image: 'zhenyaaa50/tinkoff-image-transformer:2.0.0'
-#    container_name: app
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - db
-#      - minio
-#      - kafka-1
-#      - kafka-2
-#      - kafka-3
-#    environment:
-#      - SPRING.DATASOURCE.URL=jdbc:postgresql://db/postgres
-#      - MINIO.URL=http://minio
+  app:
+    image: 'zhenyaaa50/tinkoff-image-transformer:2.0.0'
+    container_name: app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - minio
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      - SPRING.DATASOURCE.URL=jdbc:postgresql://db/postgres
+      - MINIO.URL=http://minio
 
   db:
     image: 'postgres:16-alpine'

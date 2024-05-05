@@ -2,16 +2,10 @@ package com.app.controller;
 
 import com.app.dto.ApplyImageFiltersResponse;
 import com.app.dto.GetModifiedImageByRequestIdResponse;
-import com.app.dto.UploadImageResponse;
 import com.app.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +50,7 @@ public final class ImageFiltersController {
     /**
      * Get filtered image.
      * @param imageId image id
+     * @param requestId request id
      * @return image.
      * @throws Exception
      */
@@ -69,6 +64,9 @@ public final class ImageFiltersController {
             @PathVariable final String requestId
     ) throws Exception {
         var result = service.getFilterImageStatus(imageId, requestId);
-        return new GetModifiedImageByRequestIdResponse(result.getFirst(), result.getSecond().toString());
+        return new GetModifiedImageByRequestIdResponse(
+                result.getFirst(),
+                result.getSecond().toString()
+        );
     }
 }
