@@ -12,13 +12,13 @@ spring:
   kafka:
     listener.ack-mode: manual
     bootstrap-servers:
-      - localhost:9092
-      - localhost:9093
-      - localhost:9094
+      - http://kafka1:19092
+      - http://kafka2:19093
+      - http://kafka3:19094
     cloud:
       zookeeper:
         config.enabled: false
-        connect-string: localhost:2181
+        connect-string: http://zookeeper:2181
 
 minio:
   url: http://localhost:9000
