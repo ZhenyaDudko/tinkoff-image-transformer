@@ -1,5 +1,6 @@
 package com.app;
 
+import com.app.dto.GetImagesResponse;
 import com.app.dto.UiSuccessContainer;
 import com.app.model.user.Role;
 import com.app.model.user.User;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,13 +64,13 @@ public class ImageControllerTest extends AbstractTest {
                 .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
     }
 
-//    @Test
-//    @WithMockUser(username = "user", password = "123")
-//    void imageUploadAndDownload() throws Exception {
-//        var testFile = filesCreator.createTestFile("image/png", "test");
-//        this.mockMvc.perform(post("/api/v1/image").).andExpect(status().isNotFound())
-//
-//        this.mockMvc.perform(get("/api/v1/image/123")).andExpect(status().isNotFound())
-//                .andExpect(content().json("{\"success\":false,\"message\":\"Image not found\"}"));
-//    }
+    @Test
+    @WithMockUser(username = "user", password = "123")
+    void getImages() throws Exception {
+        var expectedResponse = new GetImagesResponse(List.of());
+
+        this.mockMvc.perform(get("/api/v1/images")).andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
+    }
+
 }

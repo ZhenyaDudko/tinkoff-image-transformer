@@ -9,6 +9,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+  kafka:
+    listener.ack-mode: manual
+    bootstrap-servers:
+      - http://kafka1:19092
+      - http://kafka2:19093
+      - http://kafka3:19094
+    cloud:
+      zookeeper:
+        config.enabled: false
+        connect-string: http://zookeeper:2181
 
 minio:
   url: http://localhost:9000
