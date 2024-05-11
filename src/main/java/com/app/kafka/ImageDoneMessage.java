@@ -2,12 +2,16 @@ package com.app.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class ImageDoneMessage {
+@NoArgsConstructor
+public class ImageDoneMessage implements Serializable {
     /**
      * ИД итогового изображения.
      */

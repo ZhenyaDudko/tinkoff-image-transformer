@@ -2,7 +2,7 @@ version: '2'
 
 services:
   app:
-    image: 'zhenyaaa50/tinkoff-image-transformer:3.0.0'
+    build: .
     container_name: app
     ports:
       - "8080:8080"
@@ -14,8 +14,8 @@ services:
       - kafka3
     environment:
       - SPRING.DATASOURCE.URL=jdbc:postgresql://db/postgres
-      - SPRING.KAFKA.BOOTSTRAP.SERVERS=http://kafka1:19092,http://kafka2:19093,http://kafka3:19094
-      - SPRING.KAFKA.CLOUD.ZOOKEEPER.CONNECT.STRING=http://zookeeper:2181
+      - SPRING.KAFKA.BOOTSTRAP_SERVERS=http://kafka1:19092,http://kafka2:19093,http://kafka3:19094
+      - SPRING.KAFKA.CLOUD.ZOOKEEPER.CONNECT_STRING=http://zookeeper:2181
       - MINIO.URL=http://minio
 
   db:

@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -152,7 +153,8 @@ public final class ImageService {
         kafkaSender.sendMessage(new ImageWipMessage(
                 imageId,
                 requestId,
-                filters.stream().map(Enum::toString).toList())
+                imageMeta.getMediaType(),
+                filters)
         );
 
         return requestId;
@@ -210,6 +212,12 @@ public final class ImageService {
         return imageMeta.get();
     }
 
-    public enum Filter {
+    public enum Filter implements Serializable {
+        /** Grayscale filter. */
+        GRAYSCALE,
+        /** Blur filter. */
+        BLUR,
+        /** Edge detection filter. */
+        EDGES
     }
 }
