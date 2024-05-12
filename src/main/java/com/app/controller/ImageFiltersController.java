@@ -34,7 +34,7 @@ public final class ImageFiltersController {
      * @return request id
      * @throws Exception
      */
-    @PostMapping("/image/{image-id}/filters/apply")
+    @PostMapping("/image/{imageId}/filters/apply")
     @Operation(
             summary = "Применение указанных фильтров к изображению",
             operationId = "applyImageFilters"
@@ -54,7 +54,7 @@ public final class ImageFiltersController {
      * @return image.
      * @throws Exception
      */
-    @GetMapping("/image/{image-id}/filters/{request-id}")
+    @GetMapping("/image/{imageId}/filters/{requestId}")
     @Operation(
             summary = "Получение ИД измененного файла по ИД запроса",
             operationId = "getModifiedImageByRequestId"

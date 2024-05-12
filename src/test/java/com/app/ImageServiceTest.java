@@ -1,10 +1,10 @@
 package com.app;
 
-import com.app.exception.ImageNotAccessibleException;
 import com.app.exception.ImageNotFoundException;
 import com.app.exception.NotSupportedTypeOfImageException;
 import com.app.model.user.Role;
 import com.app.model.user.User;
+import com.app.repository.FilterQueryRepository;
 import com.app.repository.ImageMetaRepository;
 import com.app.repository.UserRepository;
 import com.app.service.ImageService;
@@ -22,13 +22,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ImageServiceTest extends AbstractTest {
-    @Autowired
-    private FilesCreator filesCreator;
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -37,6 +39,8 @@ public class ImageServiceTest extends AbstractTest {
     private ImageMetaRepository imageMetaRepository;
     @Autowired
     private MinioClient client;
+    @Autowired
+    private FilterQueryRepository filterQueryRepository;
 
     @BeforeEach
     public void init() {
@@ -55,7 +59,7 @@ public class ImageServiceTest extends AbstractTest {
     @ParameterizedTest
     @WithMockUser(username = "user", password = "123")
     public void uploadAndDownloadImage(String fileType) {
-        var testFile = filesCreator.createTestFile(fileType, "test");
+        var testFile = FilesCreator.createTestFile(fileType, "test");
 
         var imageId = imageService.uploadImage(testFile);
         var fileAndType = imageService.downloadImage(imageId);
@@ -68,7 +72,7 @@ public class ImageServiceTest extends AbstractTest {
     @ParameterizedTest
     @WithMockUser(username = "user", password = "123")
     public void uploadAndDeleteImage(String fileType) {
-        var testFile = filesCreator.createTestFile(fileType, "test");
+        var testFile = FilesCreator.createTestFile(fileType, "test");
 
         var imageId = imageService.uploadImage(testFile);
         imageService.deleteImage(imageId);
@@ -89,7 +93,7 @@ public class ImageServiceTest extends AbstractTest {
     @ParameterizedTest
     @WithMockUser(username = "user", password = "123")
     public void incorrectImageForUpload(String fileType) {
-        var testFile = filesCreator.createTestFile(fileType, "test");
+        var testFile = FilesCreator.createTestFile(fileType, "test");
 
         assertThrows(NotSupportedTypeOfImageException.class, () -> imageService.uploadImage(testFile));
     }
@@ -113,8 +117,8 @@ public class ImageServiceTest extends AbstractTest {
     @ParameterizedTest
     @WithMockUser(username = "user", password = "123")
     public void uploadAndGetImages(String fileType) {
-        var testFile1 = filesCreator.createTestFile(fileType, "test1");
-        var testFile2 = filesCreator.createTestFile(fileType, "test2");
+        var testFile1 = FilesCreator.createTestFile(fileType, "test1");
+        var testFile2 = FilesCreator.createTestFile(fileType, "test2");
 
         var imageId1 = imageService.uploadImage(testFile1);
         var imageId2 = imageService.uploadImage(testFile2);
@@ -129,5 +133,24 @@ public class ImageServiceTest extends AbstractTest {
         assertEquals(imageId2, images.get(1).getImageId());
         assertEquals(fileType, images.get(1).getMediaType());
         assertEquals("test2", images.get(1).getName());
+    }
+
+    @ValueSource(strings = {"image/jpeg", "image/png"})
+    @SneakyThrows
+    @ParameterizedTest
+    @WithMockUser(username = "user", password = "123")
+    public void uploadAndFilterImage(String fileType) {
+        var testFile1 = FilesCreator.createTestFile(fileType, "test1");
+
+        var imageId1 = imageService.uploadImage(testFile1);
+
+        var requestId = imageService.filterImage(imageId1, List.of(
+                ImageService.Filter.BLUR,
+                ImageService.Filter.GRAYSCALE)
+        );
+
+        var request = filterQueryRepository.findByRequestId(requestId);
+        assertFalse(request.isEmpty());
+        assertEquals(imageId1, request.get().getImageId());
     }
 }

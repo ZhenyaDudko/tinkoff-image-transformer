@@ -3,22 +3,22 @@ package com.app.kafka;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.app.kafka.KafkaInitializer.TOPIC_WIP;
+import static com.app.kafka.KafkaInitializer.TOPIC_DONE;
 
 @Component
-public class KafkaWipSender {
+public class KafkaDoneSender {
 
     /**
      * Kafka producer.
      */
-    private final KafkaTemplate<String, ImageWipMessage> template;
+    private final KafkaTemplate<String, ImageDoneMessage> template;
 
     /**
      * Constructor.
      * @param allAcksKafkaTemplate - kafka producer
      */
-    public KafkaWipSender(
-            final KafkaTemplate<String, ImageWipMessage> allAcksKafkaTemplate
+    public KafkaDoneSender(
+            final KafkaTemplate<String, ImageDoneMessage> allAcksKafkaTemplate
     ) {
         template = allAcksKafkaTemplate;
     }
@@ -27,8 +27,8 @@ public class KafkaWipSender {
      * Send message into images.wip topic.
      * @param message message
      */
-    public void sendMessage(final ImageWipMessage message) {
-        template.send(TOPIC_WIP, message);
+    public void sendMessage(final ImageDoneMessage message) {
+        template.send(TOPIC_DONE, message);
     }
 
 }

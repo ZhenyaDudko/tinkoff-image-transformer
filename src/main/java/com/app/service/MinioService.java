@@ -7,13 +7,24 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.SetBucketLifecycleArgs;
+import io.minio.messages.Expiration;
+import io.minio.messages.LifecycleConfiguration;
+import io.minio.messages.LifecycleRule;
+import io.minio.messages.RuleFilter;
+import io.minio.messages.Status;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +40,49 @@ public final class MinioService {
      * Minio properties.
      */
     private final MinioProperties properties;
+
+    /**
+     * TTL for intermediate files.
+     */
+    @Value("${spring.kafka.ttl:1}")
+    private int ttl;
+
+    /**
+     * Create bucket and set expiration policy for intermediate images.
+     * @throws Exception
+     */
+    @PostConstruct
+    public void init() throws Exception {
+        boolean bucketExists = client.bucketExists(BucketExistsArgs
+                .builder()
+                .bucket(properties.getBucket())
+                .build()
+        );
+        if (!bucketExists) {
+            client.makeBucket(MakeBucketArgs
+                    .builder()
+                    .bucket(properties.getBucket())
+                    .build()
+            );
+        }
+        List<LifecycleRule> rules = new ArrayList<>();
+        rules.add(
+                new LifecycleRule(
+                        Status.ENABLED,
+                        null,
+                        new Expiration((ZonedDateTime) null, ttl, null),
+                        new RuleFilter("intermediate/"),
+                        "rule1",
+                        null,
+                        null,
+                        null));
+        LifecycleConfiguration config = new LifecycleConfiguration(rules);
+        client.setBucketLifecycle(SetBucketLifecycleArgs
+                .builder()
+                .bucket(properties.getBucket())
+                .config(config)
+                .build());
+    }
 
     /**
      * Upload image.
@@ -55,6 +109,53 @@ public final class MinioService {
         );
 
         return imageId;
+    }
+
+    /**
+     * Upload intermediate image.
+     * @param file
+     * @param mediaType
+     * @param prefix
+     * @return image id.
+     * @throws Exception
+     */
+    public String uploadImage(
+            final byte[] file,
+            final String mediaType,
+            final String prefix
+    ) throws Exception {
+        String imageId = prefix + UUID.randomUUID();
+
+        InputStream inputStream = new ByteArrayInputStream(file);
+        checkBucket();
+        client.putObject(
+                PutObjectArgs.builder()
+                        .bucket(properties.getBucket())
+                        .object(imageId)
+                        .stream(
+                                inputStream,
+                                file.length,
+                                properties.getImageSize()
+                        )
+                        .contentType(mediaType)
+                        .build()
+        );
+
+        return imageId;
+    }
+
+    /**
+     * Upload image.
+     * @param file
+     * @param mediaType
+     * @return image id.
+     * @throws Exception
+     */
+    public String uploadImage(
+            final byte[] file,
+            final String mediaType
+    ) throws Exception {
+        return uploadImage(file, mediaType, "");
     }
 
     /**
