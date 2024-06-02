@@ -3,6 +3,7 @@ package com.app.controller;
 import com.app.dto.ApplyImageFiltersResponse;
 import com.app.dto.GetModifiedImageByRequestIdResponse;
 import com.app.service.ImageService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Image Filters Controller", description =
         "Применение указанных фильтров к изображению")
-public final class ImageFiltersController {
+public class ImageFiltersController {
 
     /**
      * Image managing service.
@@ -34,6 +35,7 @@ public final class ImageFiltersController {
      * @return request id
      * @throws Exception
      */
+    @RateLimiter(name = "ApiRateLimiter")
     @PostMapping("/image/{imageId}/filters/apply")
     @Operation(
             summary = "Применение указанных фильтров к изображению",

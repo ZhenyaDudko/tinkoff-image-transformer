@@ -3,6 +3,7 @@ package com.app;
 import com.app.filter.BlurFilter;
 import com.app.filter.EdgeDetectionFilter;
 import com.app.filter.GrayscaleFilter;
+import com.app.filter.ObjectDetectionFilter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,15 @@ public class FiltersTest {
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
 
         EdgeDetectionFilter.applyFilter(imageBytes, "jpeg");
+    }
+
+    @SneakyThrows
+    @Test
+    public void objectDetectedImage() {
+        File imageFile = new File("src/test/resources/image/flower.jpeg");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+
+        ObjectDetectionFilter.applyFilter(imageBytes, "jpeg");
     }
 
 }

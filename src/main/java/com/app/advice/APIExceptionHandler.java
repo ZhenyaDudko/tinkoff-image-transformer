@@ -6,6 +6,7 @@ import com.app.exception.ImageIsTooBigException;
 import com.app.exception.ImageNotAccessibleException;
 import com.app.exception.ImageNotFoundException;
 import com.app.exception.NotSupportedTypeOfImageException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,19 @@ public final class APIExceptionHandler {
             final Exception ex
     ) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new UiSuccessContainer(false, ex.getMessage()));
+    }
+
+    /**
+     * Handler for request not permitted exceptions.
+     * @param ex caught exception.
+     * @return response with error message.
+     */
+    @ExceptionHandler({RequestNotPermitted.class})
+    public ResponseEntity<UiSuccessContainer> unexpectedError(
+            final RequestNotPermitted ex
+    ) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(new UiSuccessContainer(false, ex.getMessage()));
     }
 
