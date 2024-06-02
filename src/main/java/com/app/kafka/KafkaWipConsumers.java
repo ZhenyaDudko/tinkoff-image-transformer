@@ -4,6 +4,7 @@ import com.app.filter.BlurFilter;
 import com.app.filter.EdgeDetectionFilter;
 import com.app.filter.FilterFunction;
 import com.app.filter.GrayscaleFilter;
+import com.app.filter.ObjectDetectionFilter;
 import com.app.model.FilterSubtask;
 import com.app.repository.FilterSubtaskRepository;
 import com.app.service.ImageService;
@@ -124,6 +125,34 @@ public class KafkaWipConsumers {
                 acknowledgment,
                 ImageService.Filter.EDGES,
                 EdgeDetectionFilter::applyFilter
+        );
+    }
+
+    /**
+     * ObjectDetection request listener.
+     *
+     * @param record         received message.
+     * @param acknowledgment object for pushing offset.
+     */
+    @KafkaListener(
+            topics = TOPIC_WIP,
+            groupId = "consumer-wip-object-detection",
+            concurrency = "2",
+            properties = {
+                    ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG + "=false",
+                    ConsumerConfig.ISOLATION_LEVEL_CONFIG + "=read_committed",
+                    ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG
+                      + "=org.apache.kafka.clients.consumer.RoundRobinAssignor"
+            }
+    )
+    public void consumeObjectDetection(
+            final ConsumerRecord<String, ImageWipMessage> record,
+            final Acknowledgment acknowledgment
+    ) throws Exception {
+        consume(record,
+                acknowledgment,
+                ImageService.Filter.OBJECT_DETECTION,
+                ObjectDetectionFilter::applyFilter
         );
     }
 

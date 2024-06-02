@@ -37,12 +37,12 @@ public class KafkaInitializer {
     /**
      * Number of partitions.
      */
-    private static final int PARTITIONS = 1;
+    private static final int PARTITIONS = 2;
 
     /**
      * Number of replicas.
      */
-    private static final short REPLICAS = 1;
+    private static final short REPLICAS = 3;
 
     /**
      * Kafka properties.

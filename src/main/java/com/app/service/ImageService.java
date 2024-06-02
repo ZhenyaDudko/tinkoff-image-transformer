@@ -218,6 +218,8 @@ public final class ImageService {
         /** Blur filter. */
         BLUR,
         /** Edge detection filter. */
-        EDGES
+        EDGES,
+        /** Object detection filter. */
+        OBJECT_DETECTION
     }
 }

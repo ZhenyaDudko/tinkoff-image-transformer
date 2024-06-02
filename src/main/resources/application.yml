@@ -21,6 +21,41 @@ spring:
         connect-string: localhost:2181
     ttl: 1
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      CircuitBreaker:
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: count_based
+  retry:
+    instances:
+      Retry:
+        maxAttempts: 3
+        waitDuration: 1s
+  ratelimiter:
+    instances:
+      RateLimiter:
+        registerHealthIndicator: true
+        limitForPeriod: 1
+        limitRefreshPeriod: 300s
+        timeoutDuration: 0s
+        allowHealthIndicatorToFail: true
+        subscribeForEvents: true
+        eventConsumerBufferSize: 50
+      ApiRateLimiter:
+        registerHealthIndicator: true
+        limitForPeriod: 1
+        limitRefreshPeriod: 300s
+        timeoutDuration: 0s
+        allowHealthIndicatorToFail: true
+        subscribeForEvents: true
+        eventConsumerBufferSize: 50
+
 minio:
   url: http://localhost:9000
   port: 9000
