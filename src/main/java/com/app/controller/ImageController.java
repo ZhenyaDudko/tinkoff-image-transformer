@@ -6,6 +6,9 @@ import com.app.dto.UiSuccessContainer;
 import com.app.dto.UploadImageResponse;
 import com.app.model.ImageMeta;
 import com.app.service.ImageService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@RequiredArgsConstructor
 @Tag(name = "Image Controller", description =
         "Базовый CRUD API для работы с картинками")
 public final class ImageController {
@@ -35,6 +37,19 @@ public final class ImageController {
      * Image managing service.
      */
     private final ImageService service;
+
+    public ImageController(ImageService service, MeterRegistry meterRegistry) {
+        this.service = service;
+        loadTimer = meterRegistry.timer("load-image-timer");
+        getTimer = meterRegistry.timer("get-image-timer");
+        failureCounter = meterRegistry.counter("get-image-failure-counter");
+    }
+
+    private final Timer loadTimer;
+
+    private final Timer getTimer;
+
+    private final Counter failureCounter;
 
     /**
      * Upload image.
@@ -49,7 +64,9 @@ public final class ImageController {
     )
     public UploadImageResponse loadImage(final MultipartFile file)
             throws Exception {
+        Timer.Sample sample = Timer.start();
         String imageId = service.uploadImage(file);
+        sample.stop(loadTimer);
         return new UploadImageResponse(imageId);
     }
 
@@ -66,10 +83,18 @@ public final class ImageController {
     )
     public ResponseEntity<byte[]> getImage(@PathVariable final String imageId)
             throws Exception {
-        Pair<byte[], String> res = service.downloadImage(imageId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(res.getSecond()));
-        return new ResponseEntity<>(res.getFirst(), headers, HttpStatus.OK);
+        Timer.Sample sample = Timer.start();
+        try {
+            Pair<byte[], String> res = service.downloadImage(imageId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(res.getSecond()));
+            return new ResponseEntity<>(res.getFirst(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            failureCounter.increment();
+            throw e;
+        } finally {
+            sample.stop(getTimer);
+        }
     }
 
     /**
